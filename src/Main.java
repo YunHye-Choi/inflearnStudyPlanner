@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        int MIN = 28;
+        int MIN = 25;
 
         System.out.println("Hello world!");
         List<Lecture> lectures = new ArrayList<>();
@@ -15,9 +15,9 @@ public class Main {
         while (true) {
             String next = sc.nextLine().trim();
             if (next.startsWith("섹션")) {
-                for (int i = 0; i < 2; i ++)
+                for (int i = 0; i < 2; i++)
                     next = sc.nextLine();
-                sectionNum ++;
+                sectionNum++;
             } else {
                 String timeStr = sc.nextLine();
                 String[] arr = timeStr.split(":");
@@ -28,15 +28,20 @@ public class Main {
                 int tenMinutes = 10 * 60 + 59;
                 if (time > tenMinutes) {
                     int dividedLecNum = time / tenMinutes + 1;
+                    time /= dividedLecNum;
                     for (int i = 0; i < dividedLecNum; i++) {
-                        time /= dividedLecNum;
-                        lectures.add(new Lecture("섹션 " + sectionNum, next + "(" + (i + 1) + "/" + dividedLecNum + ")", time));
+                        if (i == dividedLecNum - 1) {
+                            lectures.add(new Lecture("섹션 " + sectionNum, next, time));
+                        } else {
+                            lectures.add(new Lecture("섹션 " + sectionNum, next + " (" + (i + 1) + "/" + dividedLecNum + ")", time));
+                        }
                     }
                 } else {
                     lectures.add(new Lecture("섹션 " + sectionNum, next, time));
                 }
-                if (next.trim().endsWith("다음으로"))
+                if (next.trim().endsWith("다음으로")) {
                     break;
+                }
             }
         }
 
@@ -45,19 +50,26 @@ public class Main {
         int index = 0;
         int day = 1;
         int lecCount = 0;
-        for (Lecture lecture : lectures){
-            index ++;
+        for (Lecture lecture : lectures) {
+            index++;
             sum += lecture.getTime();
-            if (sum > minSeconds) {
+            if (sum >= minSeconds) {
+                lecCount++;
                 System.out.print("DAY" + day);
-                System.out.print("\t" + lectures.get(index - lecCount - 1).getName());
+                System.out.print("\t" + lectures.get(index - lecCount).getName());
                 System.out.print("\t" + lecture.getName());
                 System.out.print("\t" + (sum / 60) + "분 " + (sum % 60) + "초 \n");
                 sum = 0;
                 day++;
                 lecCount = 0;
             } else {
-                lecCount ++;
+                if (index == lectures.size()) {
+                    System.out.print("DAY" + day);
+                    System.out.print("\t" + lectures.get(index - lecCount - 1).getName());
+                    System.out.print("\t" + lecture.getName());
+                    System.out.print("\t" + (sum / 60) + "분 " + (sum % 60) + "초 \n");
+                }
+                lecCount++;
             }
         }
 
@@ -68,7 +80,7 @@ public class Main {
         String name;
         int time; // sec
 
-        public Lecture (String s, String n, int time){
+        public Lecture(String s, String n, int time) {
             this.section = s;
             this.name = n;
             this.time = time;
